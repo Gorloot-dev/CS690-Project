@@ -1,5 +1,4 @@
 using Spectre.Console;
-
 using CS690_PROJECT;
 
 namespace CS690_PROJECT
@@ -7,14 +6,11 @@ namespace CS690_PROJECT
     public class ConsoleUI
     {
         public DataManager manager;
-        //string fileName = "data.txt";
-        //FileSaver fileSaver = new FileSaver("data.txt");
          
         public ConsoleUI(DataManager mgr)
-        {
+        { // The UI needs to know about the DataManager to display and modify data
             manager = mgr;
-            // fileSaver = new FileSaver(fileName);
-             // Auto-load on start
+
         }
 
         public void Run()
@@ -90,8 +86,6 @@ namespace CS690_PROJECT
 
         public void AddItem()
         {
-            //var newItem = new Item();
-            //var Id = manager.GetNextId();
             var Name = AnsiConsole.Ask<string>("Name:");
             var Type = AnsiConsole.Ask<string>("Type:");
             var LocationPurchase = AnsiConsole.Ask<string>("Purchase Location:");
