@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using CS690_PROJECT;
+
 
 public class FileSaver
 {
@@ -13,11 +11,17 @@ public class FileSaver
         if (!File.Exists(path)) File.Create(path).Close();
     }
 
-    // Save one item
-    public void Save(Item item)
+    // Save a list of items
+    public void SaveItems(List<Item> items)
     {
-        string line = $"{item.Id},{item.Name},{item.Type},{item.Location},{item.PurchaseDate},{item.WarrantyEnd},{item.IsImportant}";
-        File.AppendAllText(path, line + Environment.NewLine);
+        var lines = new List<string>();
+        foreach (var item in items)
+        {
+            string line = $"{item.Id},{item.Name},{item.Type},{item.LocationPurchase},{item.LocationHome},{item.PurchaseDate:yyyy-MM-dd},{item.WarrantyEnd:yyyy-MM-dd},{item.IsImportant}";
+            lines.Add(line); 
+        }
+        File.WriteAllLines(path, lines);
+        
     }
 
     // Load all items
@@ -30,7 +34,7 @@ public class FileSaver
 
         foreach (string line in lines)
         {
-            if (line == "") continue; // Skip empty lines
+            if (string.IsNullOrEmpty(line)) continue; // Skip empty lines
 
             string[] parts = line.Split(',');
             
@@ -40,10 +44,11 @@ public class FileSaver
                 Id = int.Parse(parts[0]),
                 Name = parts[1],
                 Type = parts[2],
-                Location = parts[3],
-                PurchaseDate = DateTime.Parse(parts[4]),
-                WarrantyEnd = DateTime.Parse(parts[5]),
-                IsImportant = bool.Parse(parts[6])
+                LocationPurchase = parts[3],
+                LocationHome = parts[4],
+                PurchaseDate = DateTime.Parse(parts[5]),
+                WarrantyEnd = DateTime.Parse(parts[6]),
+                IsImportant = bool.Parse(parts[7])
             });
         }
         return items;

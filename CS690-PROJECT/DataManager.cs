@@ -1,33 +1,31 @@
-using System;
-using System.Collections.Generic;
 
 namespace CS690_PROJECT
 {
-    public class InventoryManager
+    public class DataManager
     {
-        public List<Item> Items { get; set; }
-        public FileSaver saver;
+        public List<Item> Items { get; }
+        public FileSaver saver {get;}
 
-        public InventoryManager()
+    // New method to reload data
+         public DataManager()
         {
             Items = new List<Item>();
             saver = new FileSaver("data.txt");
              // Auto-load on start
-            Items = saver.Load();           
-        }
+            Items = saver.Load();    
 
+        }
 
         public void AddItem(Item item)
         {
-            // If ID is 0 or negative, assign a new one automatically
-            if (item.Id <= 0)
+            // assign an new ID automatically
+            if (item.Id == 0)
             {
                 item.Id = GetNextId();
             }
             Items.Add(item);
+            Save();
         }
-
-    
 
         public int GetNextId()
         {
@@ -44,58 +42,38 @@ namespace CS690_PROJECT
                     maxId = item.Id;
                 }
             }
+            //IDs start at 1, so add 1 to the max ID found
             return maxId + 1;
         }
 
-    
-        public List<Item> GetDuplicates()
+    public void Save()
+    {
+        // This tells the FileSaver to overwrite the file with the current list
+        saver.SaveItems(Items);
+    }
+
+    public List<Item> GetDuplicates()
+    {   // This method checks for items with the same name (case-insensitive) and returns a list of duplicates
+        List<Item> duplicates = new List<Item>();
+        foreach (var currentItem in Items)
         {
-            List<Item> duplicates = new List<Item>();
+            if (currentItem.Name == null) continue;
 
-            // Loop 1: Pick an item to check
-            foreach (var currentItem in Items)
+            foreach (var otherItem in Items)
             {
-                bool isDuplicate = false;
-
-                // Loop 2: Compare against every other item
-                foreach (var otherItem in Items)
+                if (currentItem == otherItem) continue;
+                if (string.Equals(currentItem.Name, otherItem.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Skip comparing the item to itself
-                    if (currentItem == otherItem)
-                    {
-                        continue;
-                    }
-
-                    // Check if Names match (Case Insensitive)
-                    if (string.Equals(currentItem.Name, otherItem.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        isDuplicate = true;
-                        break; // Stop checking, we found a match
-                    }
-                }
-
-                // If a match was found, add it to our list
-                if (isDuplicate)
-                {
-                    // Avoid adding the same item twice to the result list
-                    bool alreadyAdded = false;
-                    foreach (var existing in duplicates)
-                    {
-                        if (existing == currentItem)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyAdded)
+                    // Check if already added
+                    if (!duplicates.Contains(currentItem))
                     {
                         duplicates.Add(currentItem);
                     }
+                    break;
                 }
             }
-
-            return duplicates;
+        }
+        return duplicates;
         }
     }
 }

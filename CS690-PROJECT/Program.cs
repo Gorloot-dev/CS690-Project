@@ -4,12 +4,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        var manager = new InventoryManager();
-        
-
+        var manager = new DataManager();
+    
        ConsoleUI ui = new ConsoleUI(manager);
         ui.Run();
-        
         
         Console.WriteLine("bye!");
     }
