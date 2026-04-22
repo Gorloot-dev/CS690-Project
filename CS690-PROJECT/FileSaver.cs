@@ -3,11 +3,13 @@ using CS690_PROJECT;
 
 public class FileSaver
 {
-    private string path;
+    public string path;
 
     public FileSaver(string filePath)
-    {
+    {       
+        // Store the file path and ensure the file exists
         this.path = filePath;
+    
         if (!File.Exists(path)) File.Create(path).Close();
     }
 
@@ -19,6 +21,7 @@ public class FileSaver
         {
             string line = $"{item.Id},{item.Name},{item.Type},{item.LocationPurchase},{item.LocationHome},{item.PurchaseDate:yyyy-MM-dd},{item.WarrantyEnd:yyyy-MM-dd},{item.IsImportant}";
             lines.Add(line); 
+
         }
         File.WriteAllLines(path, lines);
         

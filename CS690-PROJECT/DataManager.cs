@@ -2,9 +2,13 @@
 namespace CS690_PROJECT
 {
     public class DataManager
-    {
+    {   
+        //
         public List<Item> Items { get; }
+        // items are stored in a file, so we need a reference to the FileSaver to load/save them
+        
         public FileSaver saver {get;}
+        // The constructor initializes the list and loads existing items from the file
 
     // New method to reload data
          public DataManager()
