@@ -24,7 +24,7 @@ namespace CS690_PROJECT
                         .AddChoices(new[] {
                             "1. Show All",
                             "2. Add Item",
-                            "3. Edit Item",
+                            "3. Edit/Delete item",
                             "4. Show Duplicates",
                             "5. Exit"
                         })
