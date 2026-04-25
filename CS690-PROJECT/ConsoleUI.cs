@@ -1,5 +1,6 @@
 using Spectre.Console;
 using CS690_PROJECT;
+using System.Data.SqlTypes;
 
 namespace CS690_PROJECT
 {
@@ -37,7 +38,7 @@ namespace CS690_PROJECT
                     case "2. Add Item":
                         AddItem();
                         break;
-                    case "3. Edit Item":
+                    case "3. Edit/Delete item":
                         EditItem();
                         break;
                     case "4. Show Duplicates":
@@ -108,25 +109,14 @@ namespace CS690_PROJECT
             }
 
             // 2. Show a table of items so you can see the IDs
-            AnsiConsole.MarkupLine("[bold]Current Inventory:[/]");
-            var table = new Table();
-            table.AddColumn("ID");
-            table.AddColumn("Name");
-            table.AddColumn("Type");
-            table.AddColumn("Purchase Location");
-            table.AddColumn("Home Location");
-            
-            foreach (var i in manager.Items)
-            {
-                table.AddRow(i.Id.ToString(), i.Name ?? "No Name", i.Type ?? "-", i.LocationPurchase ?? "-", i.LocationHome ?? "-");
-            }
-            AnsiConsole.Write(table);
+            ShowAll();
 
             // 3. Ask for the ID
             int idToEdit = AnsiConsole.Ask<int>("Enter the [green]ID[/] of the item to edit:");
 
     
-            // 4. Find the item by ID (Unique match)
+            // 4. Find the item by ID (Unique match)3
+
             Item? found = null;
             foreach (var i in manager.Items)
             {
@@ -143,21 +133,35 @@ namespace CS690_PROJECT
                 return;
             }
 
+        //5
+        AnsiConsole.WriteLine($"1.Editing: {found.Name}[/]");
+        AnsiConsole.WriteLine("2.Delete this item");
+        AnsiConsole.WriteLine("3.Cancel");
+        var choice = AnsiConsole.Ask<string>("Please enter your choice (1-3):");
+        if (choice == "1")
+        {
             AnsiConsole.WriteLine($"[bold]Editing: {found.Name}[/]");
             
             found.Name = AnsiConsole.Ask<string>("New Name:", found.Name ?? "");
             found.Type = AnsiConsole.Ask<string>("New Type:", found.Type ?? "");
             found.LocationPurchase = AnsiConsole.Ask<string>("New Purchase Location:", found.LocationPurchase ?? "");
             found.LocationHome = AnsiConsole.Ask<string>("New Home Location:", found.LocationHome ?? "");
-
             found.PurchaseDate = AnsiConsole.Ask<DateTime>("New Purchase Date:", found.PurchaseDate);
             found.WarrantyEnd = AnsiConsole.Ask<DateTime>("New Warranty End:", found.WarrantyEnd);
-            
             found.IsImportant = AnsiConsole.Confirm("Is Important?", found.IsImportant);
 
             manager.Save();
             AnsiConsole.WriteLine("[green]Item updated![/]");
         }
+        else if (choice == "2")
+        {            manager.Removeitem(found.Id);
+            AnsiConsole.WriteLine("[green]Item removed![/]");
+        }
+        else if (choice == "3")    { 
+            AnsiConsole.WriteLine("Edit cancelled.");
+            return;
+        }
+    }
     public void ShowDuplicates()
     {
             Console.WriteLine("\n=== Duplicate Items (By Name) ===");
@@ -187,5 +191,49 @@ namespace CS690_PROJECT
                 Console.WriteLine($"Total duplicates found: {duplicates.Count}");
             }
         }
+
+    public void Removemenu(){
+        if (manager.Items.Count == 0)
+        {
+            AnsiConsole.WriteLine("[yellow]No items to remove.[/]");
+            return;
+        }
+
+        AnsiConsole.MarkupLine("[bold]Current Inventory:[/]");
+        var table = new Table();
+        table.AddColumn("ID");
+        table.AddColumn("Name");
+        table.AddColumn("Type");
+        table.AddColumn("Purchase Location");
+        table.AddColumn("Home Location");
+
+        foreach (var i in manager.Items)
+        {
+            table.AddRow(i.Id.ToString(), i.Name ?? "No Name", i.Type ?? "-", i.LocationPurchase ?? "-", i.LocationHome ?? "-");
+        }
+        AnsiConsole.Write(table);
+
+        int idToRemove = AnsiConsole.Ask<int>("Enter the [red]ID[/] of the item to remove:");
+        
+
+       while (true) {
+       if(manager.Items.Any(i => i.Id == idToRemove))
+       {
+        
+            manager.Removeitem(idToRemove);
+            AnsiConsole.MarkupLine("[green]Item removed successfully![/]");
+
+            break;
+       }
+       else
+       {
+            AnsiConsole.WriteLine("[red]Item not found.[/]");
+            break;
+       }
+       }
+
     }
+    }
+  
 }
+

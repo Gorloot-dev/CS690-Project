@@ -79,5 +79,13 @@ namespace CS690_PROJECT
         }
         return duplicates;
         }
+
+    public void Removeitem(int id)
+    {
+        // This method removes an item by its ID
+        Items.RemoveAll(item => item.Id == id);
+        Save();
+
+    }
     }
 }
